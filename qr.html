@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>QR - Para Harumi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Cormorant+Garamond&display=swap" rel="stylesheet">
+  <style>
+    body {
+      min-height: 100dvh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.4rem;
+      text-align: center;
+      padding: 2rem 1rem;
+      font-family: "Cormorant Garamond", Georgia, serif;
+      color: #e9e2cf;
+      background: radial-gradient(140% 95% at 50% 50%, #14432f 0%, #0c2a1e 55%, #061710 100%);
+    }
+    h1 {
+      font-family: "Cinzel", serif;
+      font-size: 1.3rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: #e8c877;
+      margin: 0;
+    }
+    p { max-width: 30rem; font-size: 1.15rem; font-style: italic; opacity: 0.85; }
+    #qr {
+      background: #ffffff;
+      padding: 18px;
+      border-radius: 14px;
+      box-shadow: 0 16px 44px rgba(0, 0, 0, 0.55);
+      line-height: 0;
+    }
+    #qr svg { display: block; }
+    code {
+      font-size: 0.85rem;
+      color: #40e0d0;
+      word-break: break-all;
+    }
+    .acciones { display: flex; gap: 0.8rem; flex-wrap: wrap; justify-content: center; }
+    button {
+      font-family: "Cinzel", serif;
+      font-size: 0.8rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #f7e7b4;
+      background: rgba(232, 200, 119, 0.12);
+      border: 1px solid rgba(232, 200, 119, 0.65);
+      border-radius: 999px;
+      padding: 0.85rem 1.5rem;
+      cursor: pointer;
+    }
+    button:active { background: rgba(232, 200, 119, 0.25); }
+    @media print {
+      body { background: #fff; color: #000; }
+      h1, p, .acciones, code { display: none !important; }
+      #qr { box-shadow: none; padding: 0; }
+    }
+  </style>
+</head>
+<body>
+  <h1>QR de la carta</h1>
+  <p>Apunta la c&aacute;mara del celu al c&oacute;digo para abrir la p&aacute;gina. Imprime esta hoja y p&eacute;gala en el frente de la carta.</p>
+
+  <div id="qr"></div>
+
+  <code id="url">https://ardalaxdown.github.io/harumi-cumpleanos/</code>
+
+  <div class="acciones">
+    <button type="button" id="btn-print">Imprimir</button>
+    <button type="button" id="btn-svg">Descargar SVG</button>
+    <button type="button" id="btn-png">Descargar PNG</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+  <script>
+    var URL_PAGINA = "https://ardalaxdown.github.io/harumi-cumpleanos/";
+    var cont = document.getElementById("qr");
+    var svgData = null;
+
+    function dibujar() {
+      if (typeof QRCode === "undefined") {
+        cont.textContent = "No se pudo generar el QR (sin conexion). Usa el archivo qr.png del repositorio.";
+        return;
+      }
+      QRCode.toString(URL_PAGINA, { type: "svg", errorCorrectionLevel: "H", margin: 2, width: 320 }, function (err, svg) {
+        if (err) return;
+        svgData = svg;
+        cont.innerHTML = svg;
+      });
+    }
+
+    function nombre(base, ext) {
+      return "qr-harumi." + ext;
+    }
+
+    function descargar(data, mime, file) {
+      var blob = data instanceof Blob ? data : new Blob([data], { type: mime });
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = file;
+      a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+    }
+
+    document.getElementById("btn-print").addEventListener("click", function () {
+      window.print();
+    });
+
+    document.getElementById("btn-svg").addEventListener("click", function () {
+      if (svgData) descargar(svgData, "image/svg+xml", nombre("qr", "svg"));
+    });
+
+    document.getElementById("btn-png").addEventListener("click", function () {
+      if (typeof QRCode === "undefined") return;
+      QRCode.toDataURL(URL_PAGINA, { errorCorrectionLevel: "H", margin: 2, width: 1200 }, function (err, url) {
+        if (err) return;
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = nombre("qr", "png");
+        a.click();
+      });
+    });
+
+    dibujar();
+  </script>
+</body>
+</html>
