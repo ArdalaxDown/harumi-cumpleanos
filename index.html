@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0c2a1e">
+  <meta property="og:title" content="Para Harumi - Feliz Cumpleanos">
+  <meta property="og:description" content="Un detalle de Frank">
+  <title>Para Harumi - Feliz Cumpleanos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="felt" aria-hidden="true">
+    <span class="palo" style="--x:8%;  --y:14%; --s:2.2rem; --d:0s;   --dur:26s;">&#9824;</span>
+    <span class="palo" style="--x:86%; --y:10%; --s:1.6rem; --d:2s;   --dur:31s;">&#9829;</span>
+    <span class="palo" style="--x:18%; --y:76%; --s:1.9rem; --d:5s;   --dur:28s;">&#9830;</span>
+    <span class="palo" style="--x:78%; --y:82%; --s:2.4rem; --d:1s;   --dur:34s;">&#9827;</span>
+    <span class="palo" style="--x:50%; --y:6%;  --s:1.4rem; --d:7s;   --dur:30s;">&#9829;</span>
+    <span class="palo" style="--x:92%; --y:52%; --s:1.8rem; --d:3.5s; --dur:27s;">&#9824;</span>
+    <span class="palo" style="--x:5%;  --y:44%; --s:1.5rem; --d:6s;   --dur:33s;">&#9827;</span>
+    <span class="palo" style="--x:64%; --y:92%; --s:1.7rem; --d:4s;   --dur:29s;">&#9830;</span>
+  </div>
+
+  <main class="escenario">
+
+    <!-- ============ PANTALLA 1: PORTADA ============ -->
+    <section class="pantalla activa" id="portada">
+      <div class="kanji-marca" aria-hidden="true">&#26149;&#32700;</div>
+
+      <div class="insignia">
+        <span class="kanji">&#26149;&#32700;</span>
+        <span class="insignia-txt">HARUMI &middot; belleza de la primavera</span>
+      </div>
+
+      <p class="saludo"><span class="linea"></span> Feliz cumplea&ntilde;os <span class="linea"></span></p>
+      <h1 class="nombre">Harumi</h1>
+      <p class="fecha">6 &middot; 10</p>
+
+      <div class="mazo" aria-hidden="true">
+        <div class="carta negra">
+          <span class="rango">A</span><span class="palo-c">&#9824;</span>
+        </div>
+        <div class="carta roja">
+          <span class="rango">K</span><span class="palo-c">&#9829;</span>
+        </div>
+        <div class="carta negra">
+          <span class="rango">Q</span><span class="palo-c">&#9827;</span>
+        </div>
+        <div class="ficha ficha-a" aria-hidden="true"></div>
+        <div class="ficha ficha-b" aria-hidden="true"></div>
+      </div>
+
+      <button class="boton-brillo" id="btn-abrir" type="button">
+        Ahora s&iacute; puedes abrir la carta
+      </button>
+
+      <p class="firma"><span class="linea"></span> DE FRANK <span class="linea"></span></p>
+    </section>
+
+    <!-- ============ PANTALLA 2: AUDIO ============ -->
+    <section class="pantalla" id="audio-pantalla">
+      <p class="instruccion">Reproduce este audio<br>mientras lees la carta</p>
+      <p class="sub">Deja que la voz de Frank te acompa&ntilde;e</p>
+
+      <div class="reproductor">
+        <button class="chip-play" id="btn-play" type="button" aria-label="Reproducir audio">
+          <span class="aro" aria-hidden="true"></span>
+          <span class="cara">
+            <svg class="ico-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>
+            <svg class="ico-pausa" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
+          </span>
+        </button>
+
+        <div class="tiempos">
+          <span id="t-actual">0:00</span>
+          <div class="barra" id="barra">
+            <div class="llena" id="llena"></div>
+            <div class="punto" id="punto"></div>
+          </div>
+          <span id="t-total">0:00</span>
+        </div>
+
+        <div class="ecualizador" aria-hidden="true">
+          <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        </div>
+
+        <p class="aviso" id="aviso" hidden>El audio no est&aacute; disponible a&uacute;n. Intenta de nuevo m&aacute;s tarde.</p>
+      </div>
+
+      <p class="firma suave"><span class="linea"></span> DE FRANK <span class="linea"></span></p>
+
+      <button class="volver" id="btn-volver" type="button">&lsaquo; volver</button>
+    </section>
+
+  </main>
+
+  <audio id="audio-carta" preload="metadata">
+    <source src="audio/carta.mp3" type="audio/mpeg">
+    <source src="audio/carta.wav" type="audio/wav">
+  </audio>
+
+  <script src="app.js"></script>
+</body>
+</html>
