@@ -21,7 +21,6 @@
       actual.style.display = "none";
     }
     destino.style.display = "flex";
-    // fuerza reflow para que la animacion arranque desde el principio
     void destino.offsetWidth;
     destino.classList.add("activa");
     window.scrollTo({ top: 0, behavior: "auto" });
@@ -32,8 +31,48 @@
   });
 
   btnVolver.addEventListener("click", function () {
+    reproduccionDeseada = false;
     audio.pause();
     irA(portada);
+  });
+
+  // ---------- fuentes de audio ----------
+  // Se elige la fuente comprobando con HEAD si el mp3 real ya existe;
+  // si no, se usa el wav de prueba. Si una fuente falla al reproducir,
+  // se avanza a la siguiente (manejo explicito, sin <source>, para que
+  // iOS tambien funcione).
+  var FUENTES = ["audio/carta.mp3", "audio/carta.wav"];
+  var idx = -1;
+  var agotadas = false;
+  var reproduccionDeseada = false;
+
+  function cargarDesde(i) {
+    idx = i;
+    audio.src = FUENTES[i];
+    audio.load();
+  }
+
+  function arrancar() {
+    agotadas = false;
+    aviso.hidden = true;
+    fetch(FUENTES[0], { method: "HEAD" })
+      .then(function (r) {
+        cargarDesde(r.ok ? 0 : 1);
+      })
+      .catch(function () {
+        cargarDesde(1);
+      });
+  }
+
+  audio.addEventListener("error", function () {
+    if (idx >= 0 && idx < FUENTES.length - 1) {
+      cargarDesde(idx + 1);
+    } else {
+      agotadas = true;
+      document.body.classList.remove("sonando");
+      btnPlay.setAttribute("aria-label", "Reproducir audio");
+      aviso.hidden = false;
+    }
   });
 
   // ---------- reproductor ----------
@@ -52,17 +91,47 @@
     tActual.textContent = fmt(audio.currentTime);
   }
 
+  function intentarPlay() {
+    if (agotadas) {
+      aviso.hidden = false;
+      return;
+    }
+    var p = audio.play();
+    if (p && p.catch) {
+      p.catch(function (err) {
+        var n = err && err.name;
+        if (n === "NotAllowedError") {
+          // iOS exige gesto: el usuario toca de nuevo y ya funciona
+          reproduccionDeseada = false;
+          document.body.classList.remove("sonando");
+          aviso.hidden = false;
+        } else if (n !== "AbortError" && agotadas) {
+          aviso.hidden = false;
+        }
+      });
+    }
+  }
+
   btnPlay.addEventListener("click", function () {
     aviso.hidden = true;
-    if (audio.paused) {
-      var p = audio.play();
-      if (p && p.catch) {
-        p.catch(function () {
-          aviso.hidden = false;
-        });
-      }
-    } else {
+    var reproduciendo = !audio.paused && !audio.ended;
+    if (reproduciendo) {
+      reproduccionDeseada = false;
       audio.pause();
+      return;
+    }
+    reproduccionDeseada = true;
+    if (agotadas || idx < 0) {
+      arrancar();
+    }
+    intentarPlay();
+  });
+
+  audio.addEventListener("loadedmetadata", function () {
+    tTotal.textContent = fmt(audio.duration);
+    pintar();
+    if (reproduccionDeseada) {
+      intentarPlay();
     }
   });
 
@@ -77,20 +146,14 @@
   });
 
   audio.addEventListener("ended", function () {
+    reproduccionDeseada = false;
     audio.currentTime = 0;
-    pintar();
-  });
-
-  audio.addEventListener("loadedmetadata", function () {
-    tTotal.textContent = fmt(audio.duration);
+    document.body.classList.remove("sonando");
+    btnPlay.setAttribute("aria-label", "Reproducir audio");
     pintar();
   });
 
   audio.addEventListener("timeupdate", pintar);
-
-  audio.addEventListener("error", function () {
-    aviso.hidden = false;
-  });
 
   // buscar posicion al tocar/mover la barra
   var arrastrando = false;
@@ -122,4 +185,7 @@
   barra.addEventListener("pointercancel", function () {
     arrastrando = false;
   });
+
+  // carga inicial de la fuente disponible
+  arrancar();
 })();
